@@ -77,6 +77,7 @@ public abstract class NetworkParameters {
     protected Block genesisBlock;
     protected BigInteger maxTarget;
     protected int port;
+    protected long prevPacketMagic;
     protected long packetMagic;  // Indicates message origin network and is used to seek to the next message when stream state is unknown.
     protected int addressHeader;
     protected int p2shHeader;
@@ -319,6 +320,9 @@ public abstract class NetworkParameters {
     /** The header bytes that identify the start of a packet on this network. */
     public long getPacketMagic() {
         return packetMagic;
+    }
+    public long getPrevPacketMagic() {
+        return prevPacketMagic;
     }
 
     /**

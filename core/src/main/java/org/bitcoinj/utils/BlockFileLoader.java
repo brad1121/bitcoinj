@@ -75,12 +75,21 @@ public class BlockFileLoader implements Iterable<Block>, Iterator<Block> {
     private FileInputStream currentFileStream = null;
     private Block nextBlock = null;
     private NetworkParameters params;
-    
+    private long packetMagic;
+
     public BlockFileLoader(NetworkParameters params, List<File> files) {
         fileIt = files.iterator();
         this.params = params;
+        packetMagic = params.getPacketMagic();
     }
-    
+
+    public BlockFileLoader(NetworkParameters params, List<File> files, long _packetMagic) {
+        fileIt = files.iterator();
+        this.params = params;
+        packetMagic = _packetMagic;
+    }
+
+
     @Override
     public boolean hasNext() {
         if (nextBlock == null)
@@ -128,18 +137,18 @@ public class BlockFileLoader implements Iterable<Block>, Iterator<Block> {
             try {
                 int nextChar = currentFileStream.read();
                 while (nextChar != -1) {
-                    if (nextChar != ((params.getPacketMagic() >>> 24) & 0xff)) {
+                    if (nextChar != ((packetMagic >>> 24) & 0xff)) {
                         nextChar = currentFileStream.read();
                         continue;
                     }
                     nextChar = currentFileStream.read();
-                    if (nextChar != ((params.getPacketMagic() >>> 16) & 0xff))
+                    if (nextChar != ((packetMagic >>> 16) & 0xff))
                         continue;
                     nextChar = currentFileStream.read();
-                    if (nextChar != ((params.getPacketMagic() >>> 8) & 0xff))
+                    if (nextChar != ((packetMagic >>> 8) & 0xff))
                         continue;
                     nextChar = currentFileStream.read();
-                    if (nextChar == (params.getPacketMagic() & 0xff))
+                    if (nextChar == (packetMagic & 0xff))
                         break;
                 }
                 byte[] bytes = new byte[4];
